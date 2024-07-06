@@ -1,0 +1,74 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Sale {
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  id        String    @id @default(cuid())
+  product   Product?  @relation(fields: [productId], references: [id])
+  productId String?
+  quantity  Int?
+  updatedAt DateTime  @updatedAt
+}
+
+model Inventory {
+  createdAt     DateTime     @default(now())
+  id            String       @id @default(cuid())
+  quantity      Float?
+  rawMaterial   RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  rawMaterialId String?
+  updatedAt     DateTime     @updatedAt
+}
+
+model Product {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  price       Float?
+  sales       Sale[]
+  updatedAt   DateTime @updatedAt
+}
+
+model RawMaterial {
+  cost        Float?
+  createdAt   DateTime             @default(now())
+  id          String               @id @default(cuid())
+  inventories Inventory[]
+  name        String?
+  unit        EnumRawMaterialUnit?
+  updatedAt   DateTime             @updatedAt
+  wastages    Wastage[]
+}
+
+model Wastage {
+  createdAt     DateTime     @default(now())
+  date          DateTime?
+  id            String       @id @default(cuid())
+  quantity      Float?
+  rawMaterial   RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  rawMaterialId String?
+  updatedAt     DateTime     @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumRawMaterialUnit {
+  Option1
+}
